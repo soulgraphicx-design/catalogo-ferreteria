@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Catálogo Digital de Ferretería - Inventario actualizado de herramientas, cuchillería, cerámica y tubería PVC">
+    <title>🔧 Catálogo Digital Pro - Ferretería</title>
+    
+    <!-- Fuentes Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- jsPDF para exportar a PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    
+    <style>
+        /* ===== VARIABLES CSS PARA TEMAS ===== */
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5568d3;
+            --secondary: #764ba2;
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-card: #ffffff;
+            --bg-body: #f8f9fa;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a6a;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ===== MODO OSCURO ===== */
+        [data-theme="dark"] {
+            --primary: #818cf8;
+            --primary-dark: #6366f1;
+            --secondary: #a78bfa;
+            --bg-gradient: linear-gradient(135deg, #1e1e2e 0%, #2d2d44 100%);
+            --bg-card: #2d2d44;
+            --bg-body: #1a1a2e;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --border-color: #3f3f5a;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.4);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.5);
+        }
+
+        /* ===== RESET Y BASE ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        html { scroll-behavior: smooth; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            padding: 16px;
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: var(--transition);
+        }
+
+        /* ===== CONTENEDOR ===== */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            background: var(--bg-card);
+            padding: 24px 32px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-title h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-title .subtitle {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* ===== BOTONES ===== */
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--bg-body);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+
+        .btn-icon {
+            padding: 8px;
+            border-radius: 8px;
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-icon:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* ===== BARRA DE BÚSQUEDA Y FILTROS ===== */
+        .search-filter {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 24px;
+        }
+
+        .search-wrapper {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 14px 20px 14px 48px;
+            font-size: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .filters {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid var(--border-color);
+            background: var(--bg-body);
+            color: var(--text-primary);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .sort-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-left: auto;
+        }
+
+        .sort-select {
+            padding: 8px 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        /* ===== ESTADÍSTICAS ===== */
+        .stats {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 24px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 16px;
+            background: var(--bg-body);
+            border-radius: 10px;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .stat-icon {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        /* ===== CATEGORÍAS ===== */
+        .category {
+            background: var(--bg-card);
+            padding: 24px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 24px;
+            scroll-margin-top: 20px;
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .category-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .category-count {
+            background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .category-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* ===== GRID DE PRODUCTOS ===== */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        /* ===== TARJETA DE PRODUCTO ===== */
+        .product-card {
+            background: var(--bg-body);
+            border-radius: 10px;
+            padding: 16px;
+            transition: var(--transition);
+            border-left: 4px solid var(--primary);
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 0 30px 30px 0;
+            border-color: transparent var(--success) transparent transparent;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .product-card.in-stock::before {
+            opacity: 1;
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-low { background: var(--warning); color: white; }
+        .badge-new { background: var(--info); color: white; }
+        .badge-sale { background: var(--danger); color: white; }
+
+        .product-image {
+            width: 100%;
+            height: 140px;
+            background: linear-gradient(135deg, var(--primary)20, var(--secondary)20);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.05);
+        }
+
+        .product-code {
+            background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .product-code:hover {
+            background: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        .product-code.copied {
+            background: var(--success);
+        }
+
+        .product-name {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.4;
+        }
+
+        .product-details {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .product-details strong {
+            color: var(--text-secondary);
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .product-quantity {
+            background: var(--success);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .product-quantity.low {
+            background: var(--warning);
+        }
+
+        .product-quantity.out {
+            background: var(--danger);
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        /* ===== MODAL DE PRODUCTO ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 16px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 24px;
+            position: relative;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: var(--bg-body);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        .modal-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, var(--primary)20, var(--secondary)20);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .modal-code {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .modal-details {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .modal-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .modal-row:last-child {
+            border-bottom: none;
+        }
+
+        .modal-row label {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .modal-row span {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .modal-quantity {
+            text-align: center;
+            padding: 12px;
+            background: var(--success);
+            color: white;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* ===== UTILIDADES ===== */
+        .hidden { display: none !important; }
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0,0,0,0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* ===== TOAST NOTIFICATIONS ===== */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            padding: 14px 20px;
+            border-radius: 10px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 2000;
+            animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s;
+            max-width: 350px;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.error { border-left: 4px solid var(--danger); }
+        .toast.info { border-left: 4px solid var(--info); }
+
+        /* ===== PRINT STYLES ===== */
+        @media print {
+            body {
+                background: white;
+                color: black;
+                padding: 0;
+            }
+            .search-filter, .stats, .header-actions, .category-actions, 
+            .product-actions, .modal, .toast, .btn-icon {
+                display: none !important;
+            }
+            header {
+                box-shadow: none;
+                border-bottom: 2px solid #000;
+            }
+            .category {
+                break-inside: avoid;
+                page-break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+            .product-card {
+                break-inside: avoid;
+                page-break-inside: avoid;
+                border: 1px solid #ddd;
+                box-shadow: none;
+            }
+            .product-card:hover {
+                transform: none;
+            }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            body { padding: 12px; }
+            header {
+                flex-direction: column;
+                text-align: center;
+                padding: 20px;
+            }
+            .header-title h1 { font-size: 1.5rem; }
+            .header-actions { width: 100%; justify-content: center; }
+            .search-filter { padding: 16px; }
+            .filters { justify-content: center; }
+            .sort-controls { 
+                width: 100%; 
+                justify-content: center;
+                margin-left: 0;
+                margin-top: 12px;
+            }
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+            .category-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .category-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+
+        /* ===== ACCESSIBILITY ===== */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        .product-card:focus,
+        .filter-btn:focus,
+        .btn:focus,
+        .search-box:focus {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        /* ===== LOADING STATE ===== */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            color: var(--text-muted);
+        }
+
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 12px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <header>
+            <div class="header-title">
+                <span style="font-size: 2rem;">🔧</span>
+                <div>
+                    <h1>Catálogo Digital Pro</h1>
+                    <div class="subtitle">Ferretería • Inventario Inteligente</div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn-icon" id="themeToggle" title="Cambiar tema" aria-label="Alternar modo oscuro">
+                    <span id="themeIcon">🌙</span>
+                </button>
+                <button class="btn btn-outline" id="exportCSV">📊 CSV</button>
+                <button class="btn btn-outline" id="exportJSON">📦 JSON</button>
+                <button class="btn" id="exportPDF">📄 Exportar PDF</button>
+                <button class="btn btn-secondary" onclick="window.print()">🖨️ Imprimir</button>
+            </div>
+        </header>
+
+        <!-- ESTADÍSTICAS -->
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-icon">📦</div>
+                <div class="stat-number" id="totalProducts">0</div>
+                <div class="stat-label">Productos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🗂️</div>
+                <div class="stat-number" id="totalCategories">4</div>
+                <div class="stat-label">Categorías</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🔢</div>
+                <div class="stat-number" id="totalItems">0</div>
+                <div class="stat-label">Items Totales</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⚠️</div>
+                <div class="stat-number" id="lowStock">0</div>
+                <div class="stat-label">Bajo Stock</div>
+            </div>
+        </div>
+
+        <!-- BÚSQUEDA Y FILTROS -->
+        <div class="search-filter">
+            <div class="search-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-box" id="searchBox" 
+                       placeholder="Buscar por nombre, código, marca o descripción..."
+                       aria-label="Buscar productos">
+            </div>
+            <div class="filters">
+                <button class="filter-btn active" data-filter="all">✨ Todos</button>
+                <button class="filter-btn" data-filter="herramientas">🔨 Herramientas</button>
+                <button class="filter-btn" data-filter="cuchilleria">🔪 Cuchillería</button>
+                <button class="filter-btn" data-filter="ceramica">🧱 Cerámica</button>
+                <button class="filter-btn" data-filter="tuberia">🚰 Tubería PVC</button>
+            </div>
+            <div class="sort-controls">
+                <label for="sortSelect" class="sr-only">Ordenar por</label>
+                <select class="sort-select" id="sortSelect">
+                    <option value="default">📋 Orden predeterminado</option>
+                    <option value="name-asc">🔤 Nombre A-Z</option>
+                    <option value="name-desc">🔤 Nombre Z-A</option>
+                    <option value="code-asc">🔢 Código ↑</option>
+                    <option value="code-desc">🔢 Código ↓</option>
+                    <option value="qty-desc">📦 Cantidad mayor</option>
+                    <option value="qty-asc">📦 Cantidad menor</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- CATEGORÍA: HERRAMIENTAS -->
+        <section class="category" data-category="herramientas">
+            <div class="category-header">
+                <h2 class="category-title">
+                    <span>🔨</span>
+                    Herramientas - Almadanas
+                </h2>
+                <span class="category-count" id="count-herramientas">5 productos</span>
+                <div class="category-actions">
+                    <button class="btn btn-sm btn-secondary" onclick="scrollToCategory('herramientas')">🔗 Enlace</button>
+                </div>
+            </div>
+            <div class="products-grid" id="grid-herramientas">
+                <!-- Productos generados dinámicamente -->
+            </div>
+        </section>
+
+        <!-- CATEGORÍA: CUCHILLERÍA -->
+        <section class="category" data-category="cuchilleria">
+            <div class="category-header">
+                <h2 class="category-title">
+                    <span>🔪</span>
+                    Cuchillería - Kitchen Expert
+                </h2>
+                <span class="category-count" id="count-cuchilleria">5 productos</span>
+                <div class="category-actions">
+                    <button class="btn btn-sm btn-secondary" onclick="scrollToCategory('cuchilleria')">🔗 Enlace</button>
+                </div>
+            </div>
+            <div class="products-grid" id="grid-cuchilleria"></div>
+        </section>
+
+        <!-- CATEGORÍA: CERÁMICA -->
+        <section class="category" data-category="ceramica">
+            <div class="category-header">
+                <h2 class="category-title">
+                    <span>🧱</span>
+                    Cerámica y Pisos
+                </h2>
+                <span class="category-count" id="count-ceramica">8 productos</span>
+                <div class="category-actions">
+                    <button class="btn btn-sm btn-secondary" onclick="scrollToCategory('ceramica')">🔗 Enlace</button>
+                </div>
+            </div>
+            <div class="products-grid" id="grid-ceramica"></div>
+        </section>
+
+        <!-- CATEGORÍA: TUBERÍA -->
+        <section class="category" data-category="tuberia">
+            <div class="category-header">
+                <h2 class="category-title">
+                    <span>🚰</span>
+                    Tubería PVC y Conexiones
+                </h2>
+                <span class="category-count" id="count-tuberia">22 productos</span>
+                <div class="category-actions">
+                    <button class="btn btn-sm btn-secondary" onclick="scrollToCategory('tuberia')">🔗 Enlace</button>
+                </div>
+            </div>
+            <div class="products-grid" id="grid-tuberia"></div>
+        </section>
+    </div>
+
+    <!-- MODAL DE DETALLE -->
+    <div class="modal" id="productModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose" aria-label="Cerrar">&times;</button>
+            <div class="modal-image" id="modalImage">🔧</div>
+            <h3 class="modal-title" id="modalTitle">Nombre del Producto</h3>
+            <span class="modal-code" id="modalCode">Código: ---</span>
+            <div class="modal-details" id="modalDetails"></div>
+            <div class="modal-quantity" id="modalQuantity">Cantidad: 0</div>
+        </div>
+    </div>
+
+    <!-- TOAST CONTAINER -->
+    <div id="toastContainer"></div>
+
+    <script>
+        // ===== DATOS DE PRODUCTOS (Estructura JSON para fácil actualización) =====
+        const productsDB = {
+            herramientas: [
+                { code: '1742502', name: 'Almadana Montada 2 Libras', brand: 'Imacasa', presentation: 'Cajas de 4 piezas', qty: 32, unit: 'pzas', icon: '🔨', lowStock: false },
+                { code: '1742503', name: 'Almadana Montada 3 Libras', brand: 'Imacasa', presentation: 'Cajas de 3 piezas', qty: 30, unit: 'pzas', icon: '🔨', lowStock: false },
+                { code: '1742504', name: 'Almadana Montada 4 Libras', brand: 'Imacasa', presentation: 'Cajas de 4 piezas', qty: 32, unit: 'pzas', icon: '🔨', lowStock: false },
+                { code: '1742506', name: 'Almadana Montada 6 Libras', brand: 'Imacasa', presentation: 'Cajas de 2 + sueltas', qty: 21, unit: 'pzas', icon: '🔨', lowStock: true },
+                { code: '-', name: 'Almadana Montada 10 Libras', brand: 'Imacasa', presentation: 'Unidad', qty: 1, unit: 'unidad', icon: '🔨', lowStock: true, badge: 'new' }
+            ],
+            cuchilleria: [
+                { code: 'KE-7', name: 'Cuchillo Kitchen Expert Nro 7', line: 'Kitchen Expert', size: 'Nro 7', qty: 48, unit: 'unidades', icon: '🔪', lowStock: false },
+                { code: 'KE-6', name: 'Cuchillo Kitchen Expert Nro 6', line: 'Kitchen Expert', size: 'Nro 6', qty: 48, unit: 'unidades', icon: '🔪', lowStock: false },
+                { code: 'KE-5', name: 'Cuchillo Kitchen Expert Nro 5', line: 'Kitchen Expert', size: 'Nro 5', qty: 36, unit: 'unidades', icon: '🔪', lowStock: false },
+                { code: 'KE-4', name: 'Cuchillo Kitchen Expert Nro 4', line: 'Kitchen Expert', size: 'Nro 4', qty: 28, unit: 'unidades', icon: '🔪', lowStock: false },
+                { code: 'SET-LLAVE', name: 'Set Llave de Paso Flexible', measures: '1/2" x 5/8"', length: '40cm', use: 'Tanque WC', qty: 1, unit: 'set', icon: '🔧', lowStock: true, badge: 'sale' }
+            ],
+            ceramica: [
+                { code: 'CER-34x34', name: 'Cerámica Rapime', measures: '34 x 34 cm', qty: 12, unit: 'cajas', icon: '🧱', lowStock: true },
+                { code: 'CER-GRIS', name: 'Cerámica Gris', measures: '30 x 30 cm', perBox: '17 piezas', qty: 765, unit: 'pzas', icon: '🧱', lowStock: false },
+                { code: 'CER-VERDE', name: 'Cerámica Verde Italia', measures: '32 x 32 cm', perBox: '15 piezas', qty: 855, unit: 'pzas', icon: '🧱', lowStock: false },
+                { code: 'CAIRO-25x25', name: 'Cerámica Cairo Brillante', measures: '25 x 25 cm', type: 'Brillante', qty: 178, unit: 'metros', icon: '✨', lowStock: false },
+                { code: 'SIRACUSA', name: 'Cerámica Escoba Siracusa', measures: '10 x 9 cm', type: 'Antideslizante', qty: 105, unit: 'metros', icon: '🦶', lowStock: false },
+                { code: 'LINDELLO', name: 'Lindello 1.40m', perPack: '20 piezas', qty: 1120, unit: 'pzas', icon: '📏', lowStock: false },
+                { code: 'LAD-FORRO', name: 'Ladrillo Forro', type: 'Forro', qty: 9, unit: 'metros', icon: '🧱', lowStock: true },
+                { code: 'LAD-CORCHO', name: 'Ladrillo Corcho', type: 'Corcho', packed: 'Cajas armadas', qty: 23, unit: 'cajas', icon: '📦', lowStock: false }
+            ],
+            tuberia: [
+                { code: 'HAN-1/2', name: 'Tubería Hanquera 1/2"', type: 'Tubos/Hebras', qty: 100, unit: 'hebras', icon: '🚰', lowStock: false },
+                { code: 'YEE-4-AMA', name: 'YEE 4" Amarilla', connType: 'Y (Yee)', color: 'Amarilla', qty: 1030, unit: 'unidades', icon: '🔗', lowStock: false },
+                { code: 'YEE-8-AMA', name: 'YEE 8" Amarilla', connType: 'Y (Yee)', color: 'Amarilla', qty: 12, unit: 'unidades', icon: '🔗', lowStock: true },
+                { code: 'TEE-8-AMA', name: 'TEE 8" Amarilla', connType: 'T (Tee)', color: 'Amarilla', qty: 34, unit: 'unidades', icon: '🔗', lowStock: false },
+                { code: 'TEE-6-AMA', name: 'TEE 6" Amarilla', connType: 'T (Tee)', color: 'Amarilla', qty: 4, unit: 'unidades', icon: '🔗', lowStock: true },
+                { code: 'YEE-4-BLA', name: 'YEE 4" Blanca', connType: 'Y (Yee)', color: 'Blanca', qty: 180, unit: 'unidades', icon: '🔗', lowStock: false },
+                { code: 'TEE-4-A3-AMA', name: 'TEE 4 A3 Amarilla', connType: 'T (Tee)', class: 'A3', color: 'Amarilla', qty: 340, unit: 'unidades', icon: '🔗', lowStock: false },
+                { code: 'TEE-4-A3-BLA', name: 'TEE 4 A3 Blanca', connType: 'T (Tee)', class: 'A3', color: 'Blanca', qty: 430, unit: 'unidades', icon: '🔗', lowStock: false },
+                { code: 'TEE-4-A2-AMA', name: 'TEE 4 A2 Amarilla', connType: 'T (Tee)', class: 'A2', color: 'Amarilla', qty: 40, unit: 'unidades', icon: '🔗', lowStock: false },
+                { code: 'TEE-4-A2-BLA', name: 'TEE 4 A2 Blanca', connType: 'T (Tee)', class: 'A2', color: 'Blanca', qty: 250, unit: 'unidades', icon: '🔗', lowStock: false },
+                { code: 'TEE-3-BLA', name: 'TEE 3" Pulgada Blanca', connType: 'T (Tee)', color: 'Blanca', qty: 300, unit: 'unidades', icon: '🔗', lowStock: false },
+                { code: 'YEE-3-AMA', name: 'YEE 3" Pulgada Amarilla', connType: 'Y (Yee)', color: 'Amarilla', qty: 20, unit: 'unidades', icon: '🔗', lowStock: true },
+                { code: 'YEE-3-BLA', name: 'YEE 3" Pulgada Blanca', connType: 'Y (Yee)', color: 'Blanca', qty: 160, unit: 'unidades', icon: '🔗', lowStock: false },
+                { code: 'TEE-3-AMA', name: 'TEE 3" Pulgada Amarilla', connType: 'T (Tee)', color: 'Amarilla', qty: 39, unit: 'unidades', icon: '🔗', lowStock: false },
+                { code: 'YEE-4A3-AMA', name: 'YEE 4 A3 Amarilla', connType: 'Y (Yee)', class: 'A3', color: 'Amarilla', qty: 830, unit: 'unidades', icon: '🔗', lowStock: false },
+                { code: 'YEE-4A3-BLA', name: 'YEE 4 A3 Blanca', connType: 'Y (Yee)', class: 'A3', color: 'Blanca', qty: 300, unit: 'unidades', icon: '🔗', lowStock: false },
+                { code: 'YEE-4A3-GRI', name: 'YEE 4 A3 Gris', connType: 'Y (Yee)', class: 'A3', color: 'Gris', qty: 3, unit: 'unidades', icon: '🔗', lowStock: true, badge: 'sale' },
+                { code: 'TEE-3A2-BLA', name: 'TEE 3 A2 Blanca', connType: 'T (Tee)', class: 'A2', color: 'Blanca', qty: 260, unit: 'unidades', icon: '🔗', lowStock: false },
+                { code: 'TEE-3A2-AMA', name: 'TEE 3 A2 Amarilla', connType: 'T (Tee)', class: 'A2', color: 'Amarilla', qty: 54, unit: 'unidades', icon: '🔗', lowStock: false },
+                { code: 'YEE-3A2-BLA', name: 'YEE 3 A2 Blanca', connType: 'Y (Yee)', class: 'A2', color: 'Blanca', qty: 40, unit: 'unidades', icon: '🔗', lowStock: false },
+                { code: 'YEE-3A2-AMA', name: 'YEE 3 A2 Amarilla', connType: 'Y (Yee)', class: 'A2', color: 'Amarilla', qty: 54, unit: 'unidades', icon: '🔗', lowStock: false },
+                { code: 'SIFON-4', name: 'Sifones 4"', type: 'Sifón', qty: 14, unit: 'unidades', icon: '🌀', lowStock: true }
+            ]
+        };
+
+        // ===== ESTADO DE LA APP =====
+        const state = {
+            currentFilter: 'all',
+            currentSort: 'default',
+            searchTerm: '',
+            theme: localStorage.getItem('catalogTheme') || 'light'
+        };
+
+        // ===== INICIALIZACIÓN =====
+        document.addEventListener('DOMContentLoaded', () => {
+            applyTheme(state.theme);
+            renderAllProducts();
+            updateStats();
+            setupEventListeners();
+        });
+
+        // ===== RENDERIZADO DE PRODUCTOS =====
+        function renderAllProducts() {
+            Object.keys(productsDB).forEach(category => {
+                renderCategory(category, productsDB[category]);
+            });
+        }
+
+        function renderCategory(category, products) {
+            const grid = document.getElementById(`grid-${category}`);
+            const countEl = document.getElementById(`count-${category}`);
+            
+            if (!grid) return;
+            
+            // Filtrar y ordenar
+            let filtered = filterProducts(products);
+            filtered = sortProducts(filtered);
+            
+            // Actualizar contador
+            if (countEl) {
+                countEl.textContent = `${filtered.length} producto${filtered.length !== 1 ? 's' : ''}`;
+            }
+            
+            // Renderizar tarjetas
+            grid.innerHTML = filtered.map(product => createProductCard(product, category)).join('');
+            
+            // Agregar eventos a las tarjetas
+            grid.querySelectorAll('.product-card').forEach(card => {
+                card.addEventListener('click', (e) => {
+                    if (!e.target.closest('.product-actions')) {
+                        openModal(product);
+                    }
+                });
+            });
+            
+            // Eventos para copiar código
+            grid.querySelectorAll('.product-code').forEach(codeEl => {
+                codeEl.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    copyToClipboard(codeEl.dataset.code);
+                });
+            });
+        }
+
+        function createProductCard(product, category) {
+            const isLowStock = product.qty <= 10 && product.qty > 0;
+            const isOut = product.qty === 0;
+            const badge = product.badge ? `<span class="product-badge badge-${product.badge}">${product.badge.toUpperCase()}</span>` : '';
+            
+            return `
+                <article class="product-card ${isLowStock ? 'in-stock' : ''} ${isOut ? 'out-of-stock' : ''}" 
+                         tabindex="0" 
+                         role="button"
+                         aria-label="${product.name}, código ${product.code}, cantidad ${product.qty} ${product.unit}">
+                    ${badge}
+                    <div class="product-image" aria-hidden="true">${product.icon}</div>
+                    <span class="product-code" data-code="${product.code}" title="Click para copiar">
+                        📋 ${product.code}
+                    </span>
+                    <h3 class="product-name">${product.name}</h3>
+                    <div class="product-details">
+                        ${Object.entries(product)
+                            .filter(([key]) => !['code','name','qty','unit','icon','badge','lowStock'].includes(key))
+                            .map(([key, value]) => `<strong>${formatLabel(key)}:</strong> ${value}<br>`)
+                            .join('')}
+                    </div>
+                    <div class="product-footer">
+                        <span class="product-quantity ${isLowStock ? 'low' : ''} ${isOut ? 'out' : ''}">
+                            ${product.qty} ${product.unit}
+                        </span>
+                        <div class="product-actions">
+                            <button class="btn-icon btn-sm" onclick="openModal(${JSON.stringify(product).replace(/"/g, '&quot;')}); event.stopPropagation();" 
+                                    title="Ver detalles" aria-label="Ver detalles de ${product.name}">
+                                👁️
+                            </button>
+                        </div>
+                    </div>
+                </article>
+            `;
+        }
+
+        function formatLabel(key) {
+            const labels = {
+                brand: 'Marca', line: 'Línea', size: 'Tamaño', measures: 'Medidas',
+                perBox: 'Por caja', type: 'Tipo', class: 'Clase', color: 'Color',
+                presentation: 'Presentación', length: 'Largo', use: 'Uso',
+                packed: 'Empaque', connType: 'Conexión'
+            };
+            return labels[key] || key.charAt(0).toUpperCase() + key.slice(1);
+        }
+
+        // ===== FILTRADO Y BÚSQUEDA =====
+        function filterProducts(products) {
+            if (!state.searchTerm) return products;
+            
+            const term = state.searchTerm.toLowerCase();
+            return products.filter(p => 
+                p.name.toLowerCase().includes(term) ||
+                p.code.toLowerCase().includes(term) ||
+                (p.brand && p.brand.toLowerCase().includes(term)) ||
+                (p.type && p.type.toLowerCase().includes(term)) ||
+                (p.color && p.color.toLowerCase().includes(term))
+            );
+        }
+
+        function sortProducts(products) {
+            if (state.currentSort === 'default') return products;
+            
+            const sorted = [...products];
+            const [field, order] = state.currentSort.split('-');
+            const dir = order === 'desc' ? -1 : 1;
+            
+            switch(field) {
+                case 'name':
+                    return sorted.sort((a,b) => a.name.localeCompare(b.name) * dir);
+                case 'code':
+                    return sorted.sort((a,b) => {
+                        if (a.code === '-') return 1;
+                        if (b.code === '-') return -1;
+                        return a.code.localeCompare(b.code, undefined, {numeric: true}) * dir;
+                    });
+                case 'qty':
+                    return sorted.sort((a,b) => (a.qty - b.qty) * dir);
+                default:
+                    return sorted;
+            }
+        }
+
+        // ===== ESTADÍSTICAS =====
+        function updateStats() {
+            let totalProducts = 0;
+            let totalItems = 0;
+            let lowStockCount = 0;
+            
+            Object.values(productsDB).forEach(category => {
+                category.forEach(p => {
+                    totalProducts++;
+                    totalItems += p.qty;
+                    if (p.lowStock || p.qty <= 10) lowStockCount++;
+                });
+            });
+            
+            document.getElementById('totalProducts').textContent = totalProducts;
+            document.getElementById('totalItems').textContent = totalItems.toLocaleString('es-ES');
+            document.getElementById('lowStock').textContent = lowStockCount;
+            
+            // Actualizar contadores por categoría
+            Object.keys(productsDB).forEach(cat => {
+                const count = filterProducts(productsDB[cat]).length;
+                const el = document.getElementById(`count-${cat}`);
+                if (el) el.textContent = `${count} producto${count !== 1 ? 's' : ''}`;
+            });
+        }
+
+        // ===== EVENT LISTENERS =====
+        function setupEventListeners() {
+            // Búsqueda
+            document.getElementById('searchBox').addEventListener('input', (e) => {
+                state.searchTerm = e.target.value;
+                renderAllProducts();
+                updateStats();
+            });
+
+            // Filtros por categoría
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    state.currentFilter = btn.dataset.filter;
+                    
+                    document.querySelectorAll('.category').forEach(cat => {
+                        if (state.currentFilter === 'all' || cat.dataset.category === state.currentFilter) {
+                            cat.classList.remove('hidden');
+                        } else {
+                            cat.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+
+            // Ordenamiento
+            document.getElementById('sortSelect').addEventListener('change', (e) => {
+                state.currentSort = e.target.value;
+                renderAllProducts();
+            });
+
+            // Tema oscuro/claro
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+            // Modal
+            document.getElementById('modalClose').addEventListener('click', closeModal);
+            document.getElementById('productModal').addEventListener('click', (e) => {
+                if (e.target.id === 'productModal') closeModal();
+            });
+
+            // Teclado para modal
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeModal();
+            });
+
+            // Exportar
+            document.getElementById('exportCSV').addEventListener('click', exportToCSV);
+            document.getElementById('exportJSON').addEventListener('click', exportToJSON);
+            document.getElementById('exportPDF').addEventListener('click', exportToPDF);
+        }
+
+        // ===== TEMA OSCURO =====
+        function toggleTheme() {
+            state.theme = state.theme === 'light' ? 'dark' : 'light';
+            applyTheme(state.theme);
+            localStorage.setItem('catalogTheme', state.theme);
+            showToast(`Modo ${state.theme === 'dark' ? 'oscuro' : 'claro'} activado`, 'info');
+        }
+
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            document.getElementById('themeIcon').textContent = theme === 'dark' ? '☀️' : '🌙';
+        }
+
+        // ===== MODAL =====
+        function openModal(product) {
+            const modal = document.getElementById('productModal');
+            document.getElementById('modalImage').textContent = product.icon;
+            document.getElementById('modalTitle').textContent = product.name;
+            document.getElementById('modalCode').textContent = `Código: ${product.code}`;
+            
+            // Construir detalles
+            const details = Object.entries(product)
+                .filter(([key]) => !['code','name','qty','unit','icon','badge','lowStock'].includes(key))
+                .map(([key, value]) => `
+                    <div class="modal-row">
+                        <label>${formatLabel(key)}</label>
+                        <span>${value}</span>
+                    </div>
+                `).join('');
+            
+            document.getElementById('modalDetails').innerHTML = details || '<div class="modal-row"><label>Sin detalles adicionales</label></div>';
+            document.getElementById('modalQuantity').textContent = `📦 ${product.qty} ${product.unit} disponibles`;
+            
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('productModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // ===== UTILIDADES =====
+        function copyToClipboard(text) {
+            if (text === '-') return;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                showToast(`✅ Código "${text}" copiado`, 'success');
+                
+                // Feedback visual
+                const codeEl = document.querySelector(`[data-code="${text}"]`);
+                if (codeEl) {
+                    codeEl.classList.add('copied');
+                    codeEl.textContent = '✓ Copiado';
+                    setTimeout(() => {
+                        codeEl.classList.remove('copied');
+                        codeEl.textContent = `📋 ${text}`;
+                    }, 1500);
+                }
+            }).catch(() => {
+                showToast('❌ Error al copiar', 'error');
+            });
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <span>${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span>
+                <span>${message}</span>
+            `;
+            container.appendChild(toast);
+            
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function scrollToCategory(category) {
+            document.querySelector(`[data-category="${category}"]`)?.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+        }
+
+        // ===== EXPORTAR =====
+        function getAllProducts() {
+            const all = [];
+            Object.entries(productsDB).forEach(([category, products]) => {
+                products.forEach(p => all.push({...p, category}));
+            });
+            return filterProducts(all);
+        }
+
+        function exportToCSV() {
+            const products = getAllProducts();
+            if (products.length === 0) {
+                showToast('No hay productos para exportar', 'error');
+                return;
+            }
+            
+            const headers = ['Código', 'Nombre', 'Categoría', 'Cantidad', 'Unidad', 'Marca/Línea', 'Detalles'];
+            const rows = products.map(p => [
+                p.code,
+                p.name,
+                p.category,
+                p.qty,
+                p.unit,
+                p.brand || p.line || '-',
+                Object.entries(p).filter(([k]) => 
+                    !['code','name','category','qty','unit','brand','line','icon','badge','lowStock'].includes(k)
+                ).map(([k,v]) => `${formatLabel(k)}: ${v}`).join('; ')
+            ]);
+            
+            const csv = [headers, ...rows].map(row => 
+                row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')
+            ).join('\n');
+            
+            downloadFile(csv, 'catalogo_ferreteria.csv', 'text/csv');
+            showToast('📊 CSV exportado exitosamente', 'success');
+        }
+
+        function exportToJSON() {
+            const data = {
+                metadata: {
+                    generated: new Date().toISOString(),
+                    version: '2.0',
+                    totalProducts: Object.values(productsDB).flat().length
+                },
+                categories: productsDB
+            };
+            
+            downloadFile(JSON.stringify(data, null, 2), 'catalogo_ferreteria.json', 'application/json');
+            showToast('📦 JSON exportado exitosamente', 'success');
+        }
+
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            
+            // Título
+            doc.setFontSize(18);
+            doc.setTextColor(102, 126, 234);
+            doc.text('🔧 Catálogo Digital - Ferretería', 14, 20);
+            
+            doc.setFontSize(10);
+            doc.setTextColor(100);
+            doc.text(`Generado: ${new Date().toLocaleDateString('es-ES')}`, 14, 28);
+            
+            let yPos = 40;
+            
+            // Productos por categoría
+            Object.entries(productsDB).forEach(([catName, products]) => {
+                if (yPos > 250) { doc.addPage(); yPos = 20; }
+                
+                doc.setFontSize(14);
+                doc.setTextColor(102, 126, 234);
+                doc.text(`📁 ${catName.charAt(0).toUpperCase() + catName.slice(1)}`, 14, yPos);
+                yPos += 8;
+                
+                products.forEach(p => {
+                    if (yPos > 270) { doc.addPage(); yPos = 20; }
+                    
+                    doc.setFontSize(10);
+                    doc.setTextColor(0);
+                    doc.text(`• ${p.name} [${p.code}]`, 14, yPos);
+                    yPos += 5;
+                    
+                    doc.setTextColor(100);
+                    doc.text(`  Cantidad: ${p.qty} ${p.unit}`, 20, yPos);
+                    yPos += 5;
+                });
+                
+                yPos += 5;
+            });
+            
+            doc.save('catalogo_ferreteria.pdf');
+            showToast('📄 PDF generado exitosamente', 'success');
+        }
+
+        function downloadFile(content, filename, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // ===== ACCESIBILIDAD MEJORADA =====
+        // Navegación con teclado para tarjetas
+        document.addEventListener('keydown', (e) => {
+            if (e.target.classList.contains('product-card') && (e.key === 'Enter' || e.key === ' ')) {
+                e.preventDefault();
+                const product = productsDB[e.target.closest('[data-category]').dataset.category]
+                    .find(p => p.code === e.target.querySelector('.product-code').dataset.code);
+                if (product) openModal(product);
+            }
+        });
+    </script>
+</body>
+</html>
